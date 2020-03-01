@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace GeoDoorServer3.Models
+namespace GeoDoorServer.Models
 {
     public class GeoDoorServer3Context : IdentityDbContext<IdentityUser>
     {

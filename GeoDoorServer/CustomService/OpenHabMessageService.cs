@@ -4,10 +4,10 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using GeoDoorServer3.Models.DataModels;
+using GeoDoorServer.Models.DataModels;
 using Microsoft.Extensions.Logging;
 
-namespace GeoDoorServer3.CustomService
+namespace GeoDoorServer.CustomService
 {
     public class OpenHabMessageService : IOpenHabMessageService
     {

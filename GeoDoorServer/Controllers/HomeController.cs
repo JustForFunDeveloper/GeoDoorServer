@@ -3,17 +3,16 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using GeoDoorServer.CustomService;
+using GeoDoorServer.CustomService.Models;
+using GeoDoorServer.Data;
 using GeoDoorServer.Models;
-using GeoDoorServer3.CustomService;
-using GeoDoorServer3.CustomService.Models;
-using GeoDoorServer3.Data;
+using GeoDoorServer.Models.DataModels;
 using Microsoft.AspNetCore.Mvc;
-using GeoDoorServer3.Models;
-using GeoDoorServer3.Models.DataModels;
 using Microsoft.DotNet.PlatformAbstractions;
 using Microsoft.Extensions.Logging;
 
-namespace GeoDoorServer3.Controllers
+namespace GeoDoorServer.Controllers
 {
     public class HomeController : Controller
     {

@@ -1,10 +1,10 @@
 ﻿using System.Collections.Concurrent;
 using System.Linq;
-using GeoDoorServer3.CustomService.Models;
-using GeoDoorServer3.Data;
-using GeoDoorServer3.Models.DataModels;
+using GeoDoorServer.CustomService.Models;
+using GeoDoorServer.Models.DataModels;
+using GeoDoorServer.Data;
 
-namespace GeoDoorServer3.CustomService
+namespace GeoDoorServer.CustomService
 {
     public class DataSingleton : IDataSingleton
     {

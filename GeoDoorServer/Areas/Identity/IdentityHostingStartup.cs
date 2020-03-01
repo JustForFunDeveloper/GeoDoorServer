@@ -1,5 +1,5 @@
 ﻿using System;
-using GeoDoorServer3.Models;
+using GeoDoorServer.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
@@ -7,8 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-[assembly: HostingStartup(typeof(GeoDoorServer3.Areas.Identity.IdentityHostingStartup))]
-namespace GeoDoorServer3.Areas.Identity
+[assembly: HostingStartup(typeof(GeoDoorServer.Areas.Identity.IdentityHostingStartup))]
+namespace GeoDoorServer.Areas.Identity
 {
     public class IdentityHostingStartup : IHostingStartup
     {

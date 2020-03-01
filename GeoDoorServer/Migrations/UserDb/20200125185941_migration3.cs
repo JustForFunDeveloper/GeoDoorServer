@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace GeoDoorServer3.Migrations.UserDb
+namespace GeoDoorServer.Migrations.UserDb
 {
     public partial class migration3 : Migration
     {

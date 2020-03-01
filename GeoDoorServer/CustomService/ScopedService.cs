@@ -1,11 +1,11 @@
 ﻿using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
-using GeoDoorServer3.CustomService.Models;
-using GeoDoorServer3.Data;
-using GeoDoorServer3.Models.DataModels;
+using GeoDoorServer.CustomService.Models;
+using GeoDoorServer.Data;
+using GeoDoorServer.Models.DataModels;
 
-namespace GeoDoorServer3.CustomService
+namespace GeoDoorServer.CustomService
 {
     internal interface IScopedService
     {

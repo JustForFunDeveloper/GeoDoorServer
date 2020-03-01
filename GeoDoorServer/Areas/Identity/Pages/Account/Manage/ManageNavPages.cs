@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace GeoDoorServer3.Areas.Identity.Pages.Account.Manage
+namespace GeoDoorServer.Areas.Identity.Pages.Account.Manage
 {
     public static class ManageNavPages
     {

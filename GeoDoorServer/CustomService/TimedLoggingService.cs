@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace GeoDoorServer3.CustomService
+namespace GeoDoorServer.CustomService
 {
     public class TimedLoggingService : IHostedService, IDisposable
     {

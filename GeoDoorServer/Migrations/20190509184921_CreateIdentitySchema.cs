@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace GeoDoorServer3.Migrations
+namespace GeoDoorServer.Migrations
 {
     public partial class CreateIdentitySchema : Migration
     {

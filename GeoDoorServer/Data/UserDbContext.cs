@@ -1,7 +1,7 @@
-﻿using GeoDoorServer3.Models.DataModels;
+﻿using GeoDoorServer.Models.DataModels;
 using Microsoft.EntityFrameworkCore;
 
-namespace GeoDoorServer3.Data
+namespace GeoDoorServer.Data
 {
     public class UserDbContext : DbContext
     {

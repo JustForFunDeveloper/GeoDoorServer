@@ -1,4 +1,4 @@
-﻿namespace GeoDoorServer3.API.Model
+﻿namespace GeoDoorServer.API.Model
 {
     public class CommandItem
     {

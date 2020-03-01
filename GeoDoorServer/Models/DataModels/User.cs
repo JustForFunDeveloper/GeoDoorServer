@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Xml;
 
-namespace GeoDoorServer3.Models.DataModels
+namespace GeoDoorServer.Models.DataModels
 {
     public class User
     {

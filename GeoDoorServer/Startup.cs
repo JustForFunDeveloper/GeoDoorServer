@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
-using GeoDoorServer3.CustomService;
-using GeoDoorServer3.Data;
+using GeoDoorServer.CustomService;
+using GeoDoorServer.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -10,7 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace GeoDoorServer3
+namespace GeoDoorServer
 {
     public class Startup
     {

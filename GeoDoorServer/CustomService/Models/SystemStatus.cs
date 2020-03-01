@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Timers;
-using GeoDoorServer3.Data;
+using GeoDoorServer.Data;
 
-namespace GeoDoorServer3.CustomService.Models
+namespace GeoDoorServer.CustomService.Models
 {
     public class SystemStatus
     {

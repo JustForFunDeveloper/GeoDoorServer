@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
-using GeoDoorServer3.CustomService;
-using GeoDoorServer3.Data;
-using GeoDoorServer3.Models.DataModels;
+using GeoDoorServer.CustomService;
+using GeoDoorServer.Data;
+using GeoDoorServer.Models.DataModels;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace GeoDoorServer3
+namespace GeoDoorServer
 {
     public static class Program
     {

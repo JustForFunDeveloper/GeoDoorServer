@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 
-namespace GeoDoorServer3.Models.DataModels
+namespace GeoDoorServer.Models.DataModels
 {
     public class ErrorLog
     {

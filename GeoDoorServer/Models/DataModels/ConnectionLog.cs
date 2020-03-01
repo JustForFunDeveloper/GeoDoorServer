@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GeoDoorServer3.Models.DataModels
+namespace GeoDoorServer.Models.DataModels
 {
     public class ConnectionLog
     {

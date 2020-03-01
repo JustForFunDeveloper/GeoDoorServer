@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace GeoDoorServer3.Areas.Identity.Pages.Account.Manage
+namespace GeoDoorServer.Areas.Identity.Pages.Account.Manage
 {
     public partial class IndexModel : PageModel
     {

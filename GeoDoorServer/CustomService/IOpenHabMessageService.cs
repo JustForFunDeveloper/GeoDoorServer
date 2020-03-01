@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace GeoDoorServer3.CustomService
+namespace GeoDoorServer.CustomService
 {
     public interface IOpenHabMessageService
     {

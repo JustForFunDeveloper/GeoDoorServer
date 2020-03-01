@@ -4,13 +4,13 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using GeoDoorServer.Data;
+using GeoDoorServer.Models.DataModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using GeoDoorServer3.Data;
-using GeoDoorServer3.Models.DataModels;
 
-namespace GeoDoorServer3.Controllers
+namespace GeoDoorServer.Controllers
 {
     public class UsersController : Controller
     {

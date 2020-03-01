@@ -2,16 +2,16 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using GeoDoorServer3.API.Model;
-using GeoDoorServer3.CustomService;
-using GeoDoorServer3.CustomService.Models;
-using GeoDoorServer3.Data;
-using GeoDoorServer3.Models.DataModels;
+using GeoDoorServer.API.Model;
+using GeoDoorServer.CustomService;
+using GeoDoorServer.CustomService.Models;
+using GeoDoorServer.Data;
+using GeoDoorServer.Models.DataModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace GeoDoorServer3.API
+namespace GeoDoorServer.API
 {
     [Route("api/[controller]")]
     public class ValuesController : Controller

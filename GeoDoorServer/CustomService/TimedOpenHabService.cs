@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using GeoDoorServer3.CustomService.Models;
-using GeoDoorServer3.Models.DataModels;
+using GeoDoorServer.CustomService.Models;
+using GeoDoorServer.Models.DataModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace GeoDoorServer3.CustomService
+namespace GeoDoorServer.CustomService
 {
     // TODO: _timerValue should be configurable
 

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Concurrent;
-using GeoDoorServer3.CustomService.Models;
-using GeoDoorServer3.Models.DataModels;
+using GeoDoorServer.CustomService.Models;
+using GeoDoorServer.Models.DataModels;
 
-namespace GeoDoorServer3.CustomService
+namespace GeoDoorServer.CustomService
 {
     public interface IDataSingleton
     {

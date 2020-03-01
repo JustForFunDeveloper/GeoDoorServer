@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 
-namespace GeoDoorServer3.Workers
+namespace GeoDoorServer.Workers
 {
     public class Worker : BackgroundService
     {
