@@ -1,8 +1,119 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity
+@model GeoDoorServer3.Controllers.HomeController.DataModel
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="h1" style="font-size: 60px">Geo<span style="color: #4878C0">Door</span> Server</h1>
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <div class="card-deck" style="margin-top: 20px">
+            <div class="card text-white bg-dark mb-1">
+                <div class="card-header">
+                    <h4>
+                        <span style="color: #4878C0">Gate Status</span>
+                    </h4>
+                </div>
+                <div class="card-body align-items-center d-flex justify-content-center">
+                    <h5 class="card-title ">@Model.SystemStatus.GateStatus</h5>
+                </div>
+            </div>
+        </div>
+        <div class="card-deck" style="margin-top: 20px">
+            <div class="card text-white bg-dark mb-3">
+                <div class="card-header">
+                    <h4>
+                        <span style="color: #4878C0">Online Time</span>
+                    </h4>
+                </div>
+                <div class="card-body align-items-center d-flex justify-content-center">
+                    <h5 class="card-title ">@Model.OnlineTime</h5>
+                </div>
+            </div>
+            <div class="card text-white bg-dark mb-3">
+                <div class="card-header">
+                    <h4>
+                        <span style="color: #4878C0">User allowed</span>
+                    </h4>
+                </div>
+                <div class="card-body align-items-center d-flex justify-content-center">
+                    <h5 class="card-title">@Model.UsersAllowed</h5>
+                </div>
+            </div>
+            <div class="card text-white bg-dark mb-3">
+                <div class="card-header">
+                    <h4>
+                        <span style="color: #4878C0">User registered</span>
+                    </h4>
+                </div>
+                <div class="card-body align-items-center d-flex justify-content-center">
+                    <div>
+                        <h5 class="card-title" style="margin: 0px">@Model.UsersRegistered</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-deck" style="margin-top: 20px">
+            <div class="card text-white bg-dark mb-3">
+                <div class="card-header">
+                    <h4>
+                        <span style="color: #4878C0">Last Users</span>
+                    </h4>
+                </div>
+                <div class="card-body align-items-center d-flex justify-content-center">
+                    <div>
+                        @foreach (var user in Model.LastUsers)
+                        {
+                            <h5 class="card-title" style="margin: 0px">@user</h5>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="card text-white bg-dark mb-3">
+                <div class="card-header">
+                    <h4>
+                        <span style="color: #4878C0">Last Connection</span>
+                    </h4>
+                </div>
+                <div class="card-body align-items-center d-flex justify-content-center">
+                    <h5 class="card-title">@Model.LastConnection</h5>
+                </div>
+            </div>
+            <div class="card text-white bg-dark mb-3">
+                <div class="card-header">
+                    <h4>
+                        <span style="color: #4878C0">Errors</span>
+                    </h4>
+                </div>
+                <div class="card-body align-items-center d-flex justify-content-center">
+                    <h5 class="card-title">@Model.Errors</h5>
+                </div>
+            </div>
+        </div>
+        <div class="card text-white bg-dark mb-3" style="margin-top: 20px">
+            <div class="card-header">
+                <h4>
+                    <span style="color: #4878C0">Log</span>
+                </h4>
+            </div>
+            <div class="card-body" style="overflow-y: scroll; height: 400px">
+                @foreach (var item in Model.LogMessagesList)
+                {
+                    <p class="card-text text-left" style="margin: 0px">@item</p>
+                }
+            </div>
+        </div>
+    }
+    else
+    {
+        <p>Welcome to the Geo<span style="color: #4878c0">Door</span> User Management platform.</p>
+        <img src="~/images/home/GeoDoor.svg" alt="GeoDoor" height="200px" style="margin-top: 30px"/>
+        <p style="margin-top: 40px">Click here to get started</p>
+        <a asp-area="Identity" asp-page="/Account/Login">
+            <button class="btn btn-dark" style="width: 25%">Login</button>
+        </a>
+    }
 </div>

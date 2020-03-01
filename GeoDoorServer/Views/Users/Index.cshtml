@@ -1,0 +1,54 @@
+﻿@model IEnumerable<GeoDoorServer3.Models.DataModels.User>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1 class="h1 text-primary">User Table</h1>
+<h4 class="h4">Saved User: @Model.Count()</h4>
+<p>
+    <a asp-action="Create"><button class="btn btn-dark">Create New</button></a>
+</p>
+<table class="table table-striped table-hover table-responsive-sm">
+    <thead class="thead-dark">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.PhoneId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.AccessRights)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.LastConnection)
+        </th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.PhoneId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AccessRights)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastConnection)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id"><button class="btn btn-primary">Edit</button></a>
+                <a asp-action="Details" asp-route-id="@item.Id"><button class="btn btn-dark">Details</button></a>
+                <a asp-action="Delete" asp-route-id="@item.Id"><button class="btn btn-danger">Delete</button></a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

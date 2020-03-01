@@ -1,0 +1,51 @@
+﻿@model GeoDoorServer3.Controllers.HomeController.DataModel
+@{
+    ViewData["Title"] = "About";
+}
+
+<div class="text-center">
+    <h1 class="h1" style="font-size: 60px">Geo<span style="color: #4878C0">Door</span> Server</h1>
+    <h1 class="h1" style="font-size: 40px">Version: @Model.VersionNumber</h1>
+    <p style="margin-bottom: 0">
+        <span style="color: #4878c0">Just For Fun Developer</span>
+    </p>
+    <img src="~/images/home/GeoDoor.svg" alt="GeoDoor" height="200px"/>
+    <div>
+        <a href="https://github.com/JustForFunDeveloper/GeoDoorServer3/releases">
+            <button type="button" class="btn btn-dark">Check for new Releases</button>
+        </a>
+    </div>
+</div>
+<div class="col-md-6" style="margin-left: 10%; margin-right: 10%; margin-top: 50px">
+    <h1 class="h3" style="color: #4878C0; margin-top: 10px">Links:</h1>
+    <div class="row" style="height: 50px">
+        <div class="col-auto">
+            <img src="~/images/home/Logo_klein.png" alt="GeoDoor" height="50px"/>
+        </div>
+        <span class="col-auto align-self-center">Homepage</span>
+        <div class="col" style="height: 50px"></div>
+        <a class="col-auto align-self-center" href="https://www.die-technik-und-ich.at/">
+            <button type="button" class="btn btn-dark">www.die-technik-und-ich.at</button>
+        </a>
+    </div>
+    <div class="row" style="height: 50px">
+        <div class="col-auto">
+            <img src="~/images/home/GitHub-Mark-120px-plus.png" alt="GeoDoor" height="50px"/>
+        </div>
+        <span class="col-auto align-self-center">GitHub</span>
+        <div class="col" style="height: 50px"></div>
+        <a class="col-auto align-self-center" href="https://github.com/JustForFunDeveloper/GeoDoorServer3">
+            <button type="button" class="btn btn-dark">GeoDoorServer Repository</button>
+        </a>
+    </div>
+
+    <p></p>
+    <h1 class="h3" style="color: #4878C0; margin-top: 50px">License Information:</h1>
+    <p>
+        This program is distributed under the terms of the MIT license.<br/>
+        For Further information follow the this link:
+    </p>
+    <a href="https://github.com/JustForFunDeveloper/GeoDoorServer3/blob/master/LICENSE">
+        <button type="button" class="btn btn-dark">MIT License</button>
+    </a>
+</div>

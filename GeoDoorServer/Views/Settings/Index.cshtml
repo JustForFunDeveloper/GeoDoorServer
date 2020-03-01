@@ -1,0 +1,46 @@
+﻿@model GeoDoorServer3.Models.DataModels.Settings
+
+@{
+    ViewData["Title"] = "Settings";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h4 class="h4">Settings</h4>
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Index">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="DoorOpenHabLink" class="control-label"></label>
+                <input asp-for="DoorOpenHabLink" class="form-control" />
+                <span asp-validation-for="DoorOpenHabLink" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="GateOpenHabLink" class="control-label"></label>
+                <input asp-for="GateOpenHabLink" class="form-control" />
+                <span asp-validation-for="GateOpenHabLink" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StatusOpenHabLink" class="control-label"></label>
+                <input asp-for="StatusOpenHabLink" class="form-control"/>
+                <span asp-validation-for="StatusOpenHabLink" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="GateTimeout" class="control-label"></label>
+                <input asp-for="GateTimeout" class="form-control"/>
+                <span asp-validation-for="GateTimeout" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MaxErrorLogRows" class="control-label"></label>
+                <input asp-for="MaxErrorLogRows" class="form-control"/>
+                <span asp-validation-for="MaxErrorLogRows" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+                <a asp-controller="Home" asp-action="Index"><button type="button" class="btn btn-dark">Back to Home</button></a>
+            </div>
+        </form>
+    </div>
+</div>
