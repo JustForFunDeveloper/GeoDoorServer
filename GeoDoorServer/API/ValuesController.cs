@@ -35,7 +35,7 @@ namespace GeoDoorServer.API
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpPost("command")]
         public async Task<ActionResult<CommandItem>> PostCommandItem([FromBody]CommandItem item)
         {
             try
@@ -93,6 +93,18 @@ namespace GeoDoorServer.API
                 });
                 return NotFound();
             }
+        }
+
+        [HttpPost("register")]
+        public async Task<ActionResult<CommandItem>> PostRegister([FromBody] CommandItem item)
+        {
+            return Ok();
+        }
+        
+        [HttpPost("login")]
+        public async Task<ActionResult<CommandItem>> PostLogin([FromBody] CommandItem item)
+        {
+            return Ok();
         }
 
         #endregion
