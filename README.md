@@ -7,8 +7,8 @@ The App on the phone is sending a signal to open the door at home.
 ![](https://img.shields.io/badge/.NET_Framework-3.1-yellow.svg) <br/>
 
 ## Issues
-[![](https://img.shields.io/github/issues-raw/JustForFunDeveloper/GeoDoorServer.svg?style=flat-square)](https://github.com/JustForFunDeveloper/Feed-Manager-WPF-App/issues)
-[![](https://img.shields.io/github/issues-closed-raw/JustForFunDeveloper/GeoDoorServer.svg?style=flat-square)](https://github.com/JustForFunDeveloper/Feed-Manager-WPF-App/issues)
+[![](https://img.shields.io/github/issues-raw/JustForFunDeveloper/GeoDoorServer.svg?style=flat-square)](https://github.com/JustForFunDeveloper/GeoDoorServer/issues?q=is%3Aopen+is%3Aissue)
+[![](https://img.shields.io/github/issues-closed-raw/JustForFunDeveloper/GeoDoorServer.svg?style=flat-square)](https://github.com/JustForFunDeveloper/GeoDoorServer/issues?q=is%3Aissue+is%3Aclosed)
 
 ## Release v0.1.0 is coming soon.
 
