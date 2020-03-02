@@ -38,6 +38,8 @@ namespace GeoDoorServer.API
         [HttpPost("command")]
         public async Task<ActionResult<CommandItem>> PostCommandItem([FromBody]CommandItem item)
         {
+            // TODO: Only Accept commands ... nothing else
+            // TODO: Move User registration and login function
             try
             {
                 _iDataSingleton.AddErrorLog(new ErrorLog()
@@ -96,15 +98,59 @@ namespace GeoDoorServer.API
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<CommandItem>> PostRegister([FromBody] CommandItem item)
+        public async Task<ActionResult<CommandItem>> PostRegister([FromBody] ApiUser item)
         {
-            return Ok();
+            try
+            {
+                _iDataSingleton.AddErrorLog(new ErrorLog()
+                {
+                    LogLevel = LogLevel.Debug,
+                    MsgDateTime = DateTime.Now,
+                    Message = $"{typeof(ValuesController)}:PostCommandItem => {item}"
+                });
+                
+                // TODO: Implement Identity model from asp.net core for users
+                
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                _iDataSingleton.AddErrorLog(new ErrorLog()
+                {
+                    LogLevel = LogLevel.Error,
+                    MsgDateTime = DateTime.Now,
+                    Message = $"{typeof(ValuesController)}:PostCommandItem Exception => {e}"
+                });
+                return NotFound();
+            }
         }
         
         [HttpPost("login")]
         public async Task<ActionResult<CommandItem>> PostLogin([FromBody] CommandItem item)
         {
-            return Ok();
+            try
+            {
+                _iDataSingleton.AddErrorLog(new ErrorLog()
+                {
+                    LogLevel = LogLevel.Debug,
+                    MsgDateTime = DateTime.Now,
+                    Message = $"{typeof(ValuesController)}:PostCommandItem => {item}"
+                });
+                
+                
+                
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                _iDataSingleton.AddErrorLog(new ErrorLog()
+                {
+                    LogLevel = LogLevel.Error,
+                    MsgDateTime = DateTime.Now,
+                    Message = $"{typeof(ValuesController)}:PostCommandItem Exception => {e}"
+                });
+                return NotFound();
+            }
         }
 
         #endregion
