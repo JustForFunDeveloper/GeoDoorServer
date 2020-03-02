@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using GeoDoorServer.Areas.Identity.Model;
 using GeoDoorServer.CustomService;
 using GeoDoorServer.CustomService.Models;
 using GeoDoorServer.Data;
 using GeoDoorServer.Models;
 using GeoDoorServer.Models.DataModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.DotNet.PlatformAbstractions;
 using Microsoft.Extensions.Logging;
 
 namespace GeoDoorServer.Controllers

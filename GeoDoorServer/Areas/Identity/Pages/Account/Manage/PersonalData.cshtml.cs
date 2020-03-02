@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using GeoDoorServer.Areas.Identity.Model;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -12,7 +13,7 @@ namespace GeoDoorServer.Areas.Identity.Pages.Account.Manage
         //private readonly ILogger<PersonalDataModel> _logger;
 
         public PersonalDataModel(
-            UserManager<IdentityUser> userManager,
+            UserManager<ApplicationUser> userManager,
             ILogger<PersonalDataModel> logger)
         {
             //_userManager = userManager;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using GeoDoorServer.Areas.Identity.Model;
 using GeoDoorServer.CustomService;
 using GeoDoorServer.Models.DataModels;
 using Microsoft.AspNetCore.Authorization;
@@ -17,11 +18,11 @@ namespace GeoDoorServer.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class LoginModel : PageModel
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
         private readonly IDataSingleton _iDataSingleton;
 
-        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger, IDataSingleton iDataSingleton)
+        public LoginModel(SignInManager<ApplicationUser> signInManager, ILogger<LoginModel> logger, IDataSingleton iDataSingleton)
         {
             _signInManager = signInManager;
             _logger = logger;

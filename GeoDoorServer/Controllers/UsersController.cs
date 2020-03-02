@@ -4,21 +4,31 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using GeoDoorServer.Areas.Identity.Model;
 using GeoDoorServer.Data;
 using GeoDoorServer.Models.DataModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace GeoDoorServer.Controllers
 {
+    // TODO: Link Users to the 
     public class UsersController : Controller
     {
         private readonly UserDbContext _context;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public UsersController(UserDbContext context)
+        public UsersController(UserDbContext context, SignInManager<ApplicationUser> signInManager,
+            UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _context = context;
+            _signInManager = signInManager;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         // GET: Users
@@ -44,6 +54,7 @@ namespace GeoDoorServer.Controllers
             {
                 return NotFound();
             }
+
             if (User.Identity.IsAuthenticated)
                 return View(user);
             return LocalRedirect("/Identity/Account/Login");
@@ -65,15 +76,36 @@ namespace GeoDoorServer.Controllers
         public async Task<IActionResult> Create([Bind("Id,PhoneId,Name,AccessRights")] User user)
         {
             if (_context.Users.Any(u => u.PhoneId.Equals(user.PhoneId)))
-                ModelState.AddModelError("PhoneId","" +
-                                                   $"PhoneId '{user.PhoneId}' does already exist!");
+                ModelState.AddModelError("PhoneId", "" +
+                                                    $"PhoneId '{user.PhoneId}' does already exist!");
             if (ModelState.IsValid)
             {
+                var newApplicationUser = new ApplicationUser { UserName = user.Name, AccessRights = user.AccessRights, LastConnection = DateTime.Now};
+                var result = await _userManager.CreateAsync(newApplicationUser, "ApiAdm1n!");
+                if (result.Succeeded)
+                {
+                    var role = new IdentityRole
+                    {
+                        Name = "ApiUser"
+                    };
+
+                    if (!await _roleManager.RoleExistsAsync(role.Name))
+                    {
+                        var roleResult = await _roleManager.CreateAsync(role);
+                        if (!roleResult.Succeeded)
+                        {
+                            return RedirectToPage("/Home/Error");
+                        }
+                    }
+                    await _userManager.AddToRoleAsync(newApplicationUser, role.Name);
+                }
+                
                 user.LastConnection = DateTime.Now;
                 _context.Add(user);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             return View(user);
         }
 
@@ -85,11 +117,13 @@ namespace GeoDoorServer.Controllers
                 return NotFound();
             }
 
+
             var user = await _context.Users.FindAsync(id);
             if (user == null)
             {
                 return NotFound();
             }
+
             if (User.Identity.IsAuthenticated)
                 return View(user);
             return LocalRedirect("/Identity/Account/Login");
@@ -128,8 +162,10 @@ namespace GeoDoorServer.Controllers
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
             }
+
             return View(user);
         }
 

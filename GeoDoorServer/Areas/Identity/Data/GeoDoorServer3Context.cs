@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using GeoDoorServer.Areas.Identity.Model;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace GeoDoorServer.Models
 {
-    public class GeoDoorServer3Context : IdentityDbContext<IdentityUser>
+    public class GeoDoorServer3Context 
+        : IdentityDbContext<ApplicationUser, IdentityRole, string>
     {
         public GeoDoorServer3Context(DbContextOptions<GeoDoorServer3Context> options)
             : base(options)

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using GeoDoorServer.API.Model;
+using GeoDoorServer.Areas.Identity.Model;
 using GeoDoorServer.CustomService;
 using GeoDoorServer.CustomService.Models;
 using GeoDoorServer.Data;

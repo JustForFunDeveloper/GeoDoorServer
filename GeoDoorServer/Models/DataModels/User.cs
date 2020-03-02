@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Xml;
+using GeoDoorServer.Areas.Identity.Model;
 
 namespace GeoDoorServer.Models.DataModels
 {
@@ -10,11 +11,5 @@ namespace GeoDoorServer.Models.DataModels
         public string Name { get; set; }
         public AccessRights AccessRights { get; set; }
         public DateTime LastConnection { get; set; }
-    }
-
-    public enum AccessRights
-    {
-        Allowed,
-        NotAllowed
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using GeoDoorServer.Areas.Identity.Model;
 using GeoDoorServer.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -19,7 +20,8 @@ namespace GeoDoorServer.Areas.Identity
                     options.UseSqlite(
                         context.Configuration.GetConnectionString("GeoDoorServer3ContextConnection")));
 
-                services.AddDefaultIdentity<IdentityUser>()
+                services.AddDefaultIdentity<ApplicationUser>()
+                    .AddRoles<IdentityRole>()
                     .AddEntityFrameworkStores<GeoDoorServer3Context>();
             });
         }

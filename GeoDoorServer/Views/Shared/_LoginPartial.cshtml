@@ -1,6 +1,9 @@
-﻿@using Microsoft.AspNetCore.Identity
-@inject SignInManager<IdentityUser> SignInManager
-@inject UserManager<IdentityUser> UserManager
+﻿@using GeoDoorServer.Areas.Identity.Model
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@inject RoleManager<IdentityRole> RoleManager
 
 <ul class="navbar-nav flex-grow-0">
 @if (SignInManager.IsSignedIn(User))
@@ -16,7 +19,7 @@
 }
 else
 {
-    if (UserManager.Users.Count() < 1)
+    if ((UserManager.GetUsersInRoleAsync("Administrator").Result.Count) < 0)
     {
         <li class="nav-item">
             <a class="nav-link" id="register" asp-area="Identity" asp-page="/Account/Register">Register</a>
