@@ -19,8 +19,9 @@ namespace GeoDoorServer.Data
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<User>()
-                .HasIndex(u => u.PhoneId)
-                .IsUnique();
+                .HasIndex(u => u.PhoneId).IsUnique();
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Name).IsUnique();
         }
     }
 }

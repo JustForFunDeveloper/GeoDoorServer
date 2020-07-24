@@ -33,9 +33,7 @@ namespace GeoDoorServer
 
             services.AddDbContext<UserDbContext>(options =>
                 options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
-
-            //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            //services.AddControllers();
+            
             services.AddControllersWithViews().AddJsonOptions(options => 
             { 
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
@@ -44,7 +42,7 @@ namespace GeoDoorServer
 
             services.AddScoped<IOpenHabMessageService, OpenHabMessageService>();
 
-            services.AddHostedService<TimedOpenHabService>();
+            //services.AddHostedService<TimedOpenHabService>();
             services.AddHostedService<TimedLoggingService>();
             services.AddScoped<IScopedService, ScopedService>();
             services.AddSingleton<IDataSingleton, DataSingleton>();
@@ -76,14 +74,7 @@ namespace GeoDoorServer
 
             app.UseRouting();
             app.UseAuthorization();
-
-            //app.UseMvc(routes =>
-            //{
-            //    routes.MapRoute(
-            //        name: "default",
-            //        template: "{controller=Home}/{action=Index}/{id?}");
-            //});
-            //app.UseEndpoints(endpoints => { app.});
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();

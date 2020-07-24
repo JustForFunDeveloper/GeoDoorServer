@@ -12,6 +12,7 @@ namespace GeoDoorServer.Areas.Identity.Model
     public enum AccessRights
     {
         Allowed,
-        NotAllowed
+        NotAllowed,
+        Register
     }
 }
