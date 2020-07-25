@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using GeoDoorServer.CustomService;
 using GeoDoorServer.Data;
 using GeoDoorServer.Models.DataModels;
 using Microsoft.AspNetCore.Mvc;
@@ -10,10 +11,12 @@ namespace GeoDoorServer.Controllers
     public class SettingsController : Controller
     {
         private readonly UserDbContext _context;
+        private readonly IDataSingleton _iDataSingleton;
 
-        public SettingsController(UserDbContext context)
+        public SettingsController(UserDbContext context, IDataSingleton iDataSingleton)
         {
             _context = context;
+            _iDataSingleton = iDataSingleton;
         }
         
         // GET
@@ -56,6 +59,7 @@ namespace GeoDoorServer.Controllers
                     currentSettings.MaxErrorLogRows = settings.MaxErrorLogRows;
                     _context.Update(currentSettings);
                     await _context.SaveChangesAsync();
+                    _iDataSingleton.SetSettings(currentSettings);
                 }
                 catch (DbUpdateConcurrencyException)
                 {

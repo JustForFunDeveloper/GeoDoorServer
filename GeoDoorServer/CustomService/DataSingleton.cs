@@ -1,8 +1,6 @@
 ﻿using System.Collections.Concurrent;
-using System.Linq;
 using GeoDoorServer.CustomService.Models;
 using GeoDoorServer.Models.DataModels;
-using GeoDoorServer.Data;
 
 namespace GeoDoorServer.CustomService
 {
@@ -10,10 +8,7 @@ namespace GeoDoorServer.CustomService
     {
         private SystemStatus _systemStatus;
         private ConcurrentQueue<ErrorLog> _concurrentQueue;
-        //private readonly UserDbContext _context;
-        
-        private string _gateStatus = "";
-        private string _gate = "";
+        private Settings _settings;
 
         public DataSingleton()
         {
@@ -21,29 +16,15 @@ namespace GeoDoorServer.CustomService
             _concurrentQueue = new ConcurrentQueue<ErrorLog>();
         }
 
-        public void SetGateTimeOut(int gateTimeOut)
+        public void SetSettings(Settings settings)
         {
-            _systemStatus.GateTimeout = gateTimeOut;
+            _settings = settings;
+            _systemStatus.GateTimeout = settings.GateTimeout;
         }
 
-        public void SetStatusGatePath(string gateStatusPath)
+        public Settings GetSettings()
         {
-            _gateStatus = gateStatusPath;
-        }
-        
-        public void SetGatePath(string gatePath)
-        {
-            _gate = gatePath;
-        }
-
-        public string GatePathStatus()
-        {
-            return _gateStatus;
-        }
-
-        public string GatePathValueChange()
-        {
-            return _gate;
+            return _settings;
         }
 
         public SystemStatus GetSystemStatus()

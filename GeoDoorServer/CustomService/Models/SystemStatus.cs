@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Timers;
-using GeoDoorServer.Data;
 
 namespace GeoDoorServer.CustomService.Models
 {
@@ -11,6 +10,7 @@ namespace GeoDoorServer.CustomService.Models
         private GateStatus _gateStatus;
         private bool _isGateMoving;
         private bool _openHabStatus;
+        private bool _isAutoMode;
 
         private Timer _gateMotionTimer;
         private int _gateTimeout;
@@ -20,6 +20,7 @@ namespace GeoDoorServer.CustomService.Models
         private readonly object _gateStatusLock = new object();
         private readonly object _isGateMovingLock = new object();
         private readonly object _openHabStatusLock = new object();
+        private readonly object _isAutoModeLock = new object();
         
         public TimeSpan OnlineTimeSpan
         {
@@ -150,6 +151,25 @@ namespace GeoDoorServer.CustomService.Models
             set => _gateTimeout = value;
         }
 
+        public bool IsAutoMode
+        {
+            
+            get
+            {
+                lock (_isAutoModeLock)
+                {
+                    return _isAutoMode;
+                }
+            }
+            set
+            {
+                lock (_isAutoModeLock)
+                {
+                    _isAutoMode = value;
+                }
+            }
+        }
+        
         public SystemStatus()
         {
             _onlineTimeSpan = TimeSpan.Zero;

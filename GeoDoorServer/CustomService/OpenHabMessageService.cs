@@ -25,13 +25,26 @@ namespace GeoDoorServer.CustomService
         /// <returns></returns>
         public async Task<string> GetData(string itemPath)
         {
-            HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders
-                .Accept
-                .Add(new MediaTypeWithQualityHeaderValue("text/plain"));
+            try
+            {
+                HttpClient client = new HttpClient();
+                client.DefaultRequestHeaders
+                    .Accept
+                    .Add(new MediaTypeWithQualityHeaderValue("text/plain"));
 
-            var result = await client.GetStringAsync(itemPath);
-            return result;
+                var result = await client.GetStringAsync(itemPath);
+                return result;
+            }
+            catch (Exception e)
+            {
+                _iDataSingleton.AddErrorLog(new ErrorLog()
+                {
+                    LogLevel = LogLevel.Debug,
+                    MsgDateTime = DateTime.Now,
+                    Message = $"{typeof(OpenHabMessageService)}:GetData => Exception: {e}"
+                });
+                return "";
+            }
         }
 
         /// <summary>

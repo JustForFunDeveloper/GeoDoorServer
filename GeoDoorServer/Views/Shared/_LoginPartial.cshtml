@@ -19,7 +19,7 @@
 }
 else
 {
-    if ((UserManager.GetUsersInRoleAsync("Administrator").Result.Count) < 0)
+    if ((UserManager.GetUsersInRoleAsync("Administrator").Result.Count) <= 0)
     {
         <li class="nav-item">
             <a class="nav-link" id="register" asp-area="Identity" asp-page="/Account/Register">Register</a>

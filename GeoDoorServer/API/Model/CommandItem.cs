@@ -2,16 +2,16 @@
 {
     public class CommandItem
     {
-        public string Id { get; set; }
-        public string CommandValue { get; set; }
+        public AuthModel Authentication { get; set; }
+        public CommandValue CommandValue { get; set; }
         public Command Command { get; set; }
     }
 
     public enum Command
     {
-        CheckUser,
         OpenDoor,
-        OpenGate
+        OpenGate,
+        OpenGateAuto
     }
 
     public enum CommandValue

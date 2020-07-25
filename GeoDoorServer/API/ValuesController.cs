@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Timer = System.Timers.Timer;
 
 namespace GeoDoorServer.API
 {
@@ -27,6 +28,9 @@ namespace GeoDoorServer.API
         private readonly IOpenHabMessageService _openHab;
         private readonly IDataSingleton _iDataSingleton;
 
+        private Timer _autoCloseTimer;
+        private int _autoCloseTimout;
+
         #region Public Methods
 
         public ValuesController(UserDbContext context, IOpenHabMessageService openHab, IDataSingleton iDataSingleton,
@@ -39,6 +43,18 @@ namespace GeoDoorServer.API
             _signInManager = signInManager;
             _userManager = userManager;
             _roleManager = roleManager;
+
+            _autoCloseTimout = 5000;
+
+            _autoCloseTimer = new Timer();
+            _autoCloseTimer.Interval = _autoCloseTimout;
+            _autoCloseTimer.Elapsed += async (sender, args) =>
+            {
+                _autoCloseTimer.Stop();
+                _iDataSingleton.GetSystemStatus().IsGateMoving = true;
+                await _openHab.PostData(_iDataSingleton.GetSettings().GateOpenHabLink, "ON", true);
+                _iDataSingleton.GetSystemStatus().IsAutoMode = false;
+            };
         }
 
         [HttpPost("register")]
@@ -106,10 +122,11 @@ namespace GeoDoorServer.API
                         {
                             return BadRequest(new AnswerModel()
                             {
-                                Answer = "User not allowed!"
+                                Answer = "User is not allowed!",
+                                Data = user.AccessRights.ToString()
                             });
                         }
-                        
+
                         if (user.Name.Equals(auth.Name) && user.PhoneId.Equals(auth.Md5Hash))
                         {
                             user.LastConnection = DateTime.Now;
@@ -125,7 +142,7 @@ namespace GeoDoorServer.API
                 
                 return NotFound(new AnswerModel()
                 {
-                    Answer = "User not found!"
+                    Answer = "User not found!",
                 });
             }
             catch (Exception e)
@@ -140,74 +157,34 @@ namespace GeoDoorServer.API
             }
         }
 
-        // /// <summary>
-        // /// POST api/-controller-
-        // /// POST API to send commands to. See <see cref="Command"/> and also <see cref="CommandItem"/>
-        // /// </summary>
-        // /// <param name="item"></param>
-        // /// <returns></returns>
-        // [HttpPost("command")]
-        // public async Task<ActionResult<CommandItem>> PostCommandItem([FromBody] CommandItem item)
-        // {
-        //     // TODO: Only Accept commands ... nothing else
-        //     // TODO: Move User registration and login function
-        //     try
-        //     {
-        //         _iDataSingleton.AddErrorLog(new ErrorLog()
-        //         {
-        //             LogLevel = LogLevel.Debug,
-        //             MsgDateTime = DateTime.Now,
-        //             Message = $"{typeof(ValuesController)}:PostCommandItem => {item}"
-        //         });
-        //
-        //         if (!CheckCommandItem(item))
-        //             return NotFound();
-        //
-        //         if (item.Command.Equals(Command.CheckUser))
-        //         {
-        //             if (await CreateUser(item))
-        //             {
-        //                 return Ok(new CommandItem()
-        //                 {
-        //                     Id = item.Id,
-        //                     Command = item.Command,
-        //                     CommandValue = "User created!"
-        //                 });
-        //             }
-        //
-        //             return BadRequest(new CommandItem()
-        //             {
-        //                 Id = item.Id,
-        //                 Command = item.Command,
-        //                 CommandValue = "Couldn't create user!"
-        //             });
-        //         }
-        //         else
-        //         {
-        //             if (!await CheckUser(item))
-        //             {
-        //                 return BadRequest(new CommandItem()
-        //                 {
-        //                     Id = item.Id,
-        //                     Command = item.Command,
-        //                     CommandValue = "User not allowed!"
-        //                 });
-        //             }
-        //         }
-        //
-        //         return await CommandItemHandler(item);
-        //     }
-        //     catch (Exception e)
-        //     {
-        //         _iDataSingleton.AddErrorLog(new ErrorLog()
-        //         {
-        //             LogLevel = LogLevel.Error,
-        //             MsgDateTime = DateTime.Now,
-        //             Message = $"{typeof(ValuesController)}:PostCommandItem Exception => {e}"
-        //         });
-        //         return NotFound();
-        //     }
-        // }
+        [HttpPost("command")]
+        public async Task<ActionResult<AnswerModel>> PostCommandItem([FromBody] CommandItem item)
+        {
+            try
+            {
+                if (!CheckCommandItem(item))
+                    return NotFound();
+                
+                ActionResult<AnswerModel> result = await CheckUser(item.Authentication);
+
+                if (result != null)
+                {
+                    return result;
+                }
+        
+                return CommandItemHandler(item).Result;
+            }
+            catch (Exception e)
+            {
+                _iDataSingleton.AddErrorLog(new ErrorLog()
+                {
+                    LogLevel = LogLevel.Error,
+                    MsgDateTime = DateTime.Now,
+                    Message = $"{typeof(ValuesController)}:PostCommandItem Exception => {e}"
+                });
+                return NotFound();
+            }
+        }
 
         //[HttpPost("register")]
         //public async Task<ActionResult<CommandItem>> PostRegister([FromBody] ApiUser item)
@@ -299,140 +276,239 @@ namespace GeoDoorServer.API
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        private async Task<ActionResult<CommandItem>> CommandItemHandler(CommandItem item)
+        private async Task<ActionResult<AnswerModel>> CommandItemHandler(CommandItem item)
         {
             switch (item.Command)
             {
                 case Command.OpenDoor:
+                    await _openHab.PostData(_iDataSingleton.GetSettings().DoorOpenHabLink, "ON", true);
                     break;
                 case Command.OpenGate:
                     switch (_iDataSingleton.GetSystemStatus().GateStatus)
                     {
                         case GateStatus.GateOpen:
-                            if (item.CommandValue.Equals(CommandValue.Open.ToString()) ||
-                                item.CommandValue.Equals(CommandValue.ForceOpen.ToString()))
+                            if (_iDataSingleton.GetSystemStatus().IsAutoMode)
                             {
-                                return Accepted(new CommandItem()
+                                if (item.CommandValue.Equals(CommandValue.Open))
                                 {
-                                    Id = item.Id,
-                                    Command = item.Command,
-                                    CommandValue = CommandValueAnswer.AlreadyOpen.ToString()
+                                    return Accepted(new AnswerModel()
+                                    {
+                                        Answer = CommandValueAnswer.AlreadyOpen + " but gate is closing automatically!"
+                                    });
+                                }
+
+                                if (item.CommandValue.Equals(CommandValue.ForceOpen))
+                                {
+                                    _autoCloseTimer.Stop();
+                                    _iDataSingleton.GetSystemStatus().IsAutoMode = false;
+                                    return Accepted(new AnswerModel()
+                                    {
+                                        Answer = CommandValueAnswer.AlreadyOpen + " but auto gate closing was turned off!"
+                                    });
+                                }
+
+                                if (item.CommandValue.Equals(CommandValue.Close))
+                                {
+                                    return Accepted(new AnswerModel()
+                                    {
+                                        Answer = CommandValueAnswer.AlreadyOpen + " but gate will close after auto mode timeout!"
+                                    });
+                                }
+                                
+                                if (item.CommandValue.Equals(CommandValue.ForceClose))
+                                {
+                                    _autoCloseTimer.Stop();
+                                    _iDataSingleton.GetSystemStatus().IsAutoMode = false;
+                                    _iDataSingleton.GetSystemStatus().IsGateMoving = true;
+                                    await _openHab.PostData(_iDataSingleton.GetSettings().GateOpenHabLink, "ON", true);
+                                    return Accepted(new AnswerModel()
+                                    {
+                                        Answer = CommandValueAnswer.GateClosing + " auto gate closing was turned off!"
+                                    });
+                                }
+                            }
+
+                            if (item.CommandValue.Equals(CommandValue.Open) ||
+                                item.CommandValue.Equals(CommandValue.ForceOpen))
+                            {
+                                return Accepted(new AnswerModel()
+                                {
+                                    Answer = CommandValueAnswer.AlreadyOpen.ToString()
                                 });
                             }
-                            else if (item.CommandValue.Equals(CommandValue.Close.ToString()) ||
-                                     item.CommandValue.Equals(CommandValue.ForceClose.ToString()))
+                            else if (item.CommandValue.Equals(CommandValue.Close) ||
+                                     item.CommandValue.Equals(CommandValue.ForceClose))
                             {
                                 _iDataSingleton.GetSystemStatus().IsGateMoving = true;
-                                await _openHab.PostData(_iDataSingleton.GatePathValueChange(), "ON", true);
-                                return Accepted(new CommandItem
+                                await _openHab.PostData(_iDataSingleton.GetSettings().GateOpenHabLink, "ON", true);
+                                return Accepted(new AnswerModel()
                                 {
-                                    Id = item.Id,
-                                    Command = item.Command,
-                                    CommandValue = CommandValueAnswer.GateClosing.ToString()
+                                    Answer = CommandValueAnswer.GateClosing.ToString()
                                 });
                             }
 
                             break;
                         case GateStatus.GateOpening:
-                            if (item.CommandValue.Equals(CommandValue.Open.ToString()) ||
-                                item.CommandValue.Equals(CommandValue.ForceOpen.ToString()))
+                            if (_iDataSingleton.GetSystemStatus().IsAutoMode)
                             {
-                                return Accepted(new CommandItem()
+                                if (item.CommandValue.Equals(CommandValue.Open))
                                 {
-                                    Id = item.Id,
-                                    Command = item.Command,
-                                    CommandValue = CommandValueAnswer.GateOpening.ToString()
+                                    return Accepted(new AnswerModel()
+                                    {
+                                        Answer = CommandValueAnswer.AlreadyOpening + " but gate is closing automatically!"
+                                    });
+                                }
+
+                                if (item.CommandValue.Equals(CommandValue.ForceOpen))
+                                {
+                                    _autoCloseTimer.Stop();
+                                    _iDataSingleton.GetSystemStatus().IsAutoMode = false;
+                                    return Accepted(new AnswerModel()
+                                    {
+                                        Answer = CommandValueAnswer.AlreadyOpening + " but auto gate closing was turned off!"
+                                    });
+                                }
+
+                                if (item.CommandValue.Equals(CommandValue.Close))
+                                {
+                                    return Accepted(new AnswerModel()
+                                    {
+                                        Answer = CommandValueAnswer.AlreadyOpening + " but gate will close after auto mode timeout!"
+                                    });
+                                }
+                                
+                                if (item.CommandValue.Equals(CommandValue.ForceClose))
+                                {
+                                    _autoCloseTimer.Stop();
+                                    _iDataSingleton.GetSystemStatus().IsAutoMode = false;
+                                    _iDataSingleton.GetSystemStatus().IsGateMoving = true;
+                                    await _openHab.PostData(_iDataSingleton.GetSettings().GateOpenHabLink, "ON", true);
+                                    Thread.Sleep(500);
+                                    await _openHab.PostData(_iDataSingleton.GetSettings().GateOpenHabLink, "ON", true);
+                                    return Accepted(new AnswerModel()
+                                    {
+                                        Answer = CommandValueAnswer.GateClosing + " auto gate closing turned off gate is closing right now!"
+                                    });
+                                }
+                            }
+                            
+                            if (item.CommandValue.Equals(CommandValue.Open) ||
+                                item.CommandValue.Equals(CommandValue.ForceOpen))
+                            {
+                                return Accepted(new AnswerModel()
+                                {
+                                    Answer = CommandValueAnswer.GateOpening.ToString()
                                 });
                             }
-                            else if (item.CommandValue.Equals(CommandValue.Close.ToString()))
+                            else if (item.CommandValue.Equals(CommandValue.Close))
                             {
-                                return Accepted(new CommandItem
+                                return Accepted(new AnswerModel()
                                 {
-                                    Id = item.Id,
-                                    Command = item.Command,
-                                    CommandValue = CommandValueAnswer.GateOpening.ToString()
+                                    Answer = CommandValueAnswer.GateOpening.ToString()
                                 });
                             }
-                            else if (item.CommandValue.Equals(CommandValue.ForceClose.ToString()))
+                            else if (item.CommandValue.Equals(CommandValue.ForceClose))
                             {
                                 _iDataSingleton.GetSystemStatus().IsGateMoving = true;
-                                await _openHab.PostData(_iDataSingleton.GatePathValueChange(), "ON", true);
+                                await _openHab.PostData(_iDataSingleton.GetSettings().GateOpenHabLink, "ON", true);
                                 Thread.Sleep(500);
-                                await _openHab.PostData(_iDataSingleton.GatePathValueChange(), "ON", true);
-                                return Accepted(new CommandItem
+                                await _openHab.PostData(_iDataSingleton.GetSettings().GateOpenHabLink, "ON", true);
+                                return Accepted(new AnswerModel()
                                 {
-                                    Id = item.Id,
-                                    Command = item.Command,
-                                    CommandValue = CommandValueAnswer.GateClosing.ToString()
+                                    Answer = CommandValueAnswer.GateClosing.ToString()
                                 });
                             }
 
                             break;
                         case GateStatus.GateClosed:
-                            if (item.CommandValue.Equals(CommandValue.Open.ToString()) ||
-                                item.CommandValue.Equals(CommandValue.ForceOpen.ToString()))
+                            if (item.CommandValue.Equals(CommandValue.Open) ||
+                                item.CommandValue.Equals(CommandValue.ForceOpen))
                             {
                                 _iDataSingleton.GetSystemStatus().IsGateMoving = true;
-                                await _openHab.PostData(_iDataSingleton.GatePathValueChange(), "ON", true);
-                                return Accepted(new CommandItem()
+                                await _openHab.PostData(_iDataSingleton.GetSettings().GateOpenHabLink, "ON", true);
+                                return Accepted(new AnswerModel()
                                 {
-                                    Id = item.Id,
-                                    Command = item.Command,
-                                    CommandValue = CommandValueAnswer.GateOpening.ToString()
+                                    Answer = CommandValueAnswer.GateOpening.ToString()
                                 });
                             }
-                            else if (item.CommandValue.Equals(CommandValue.Close.ToString()) ||
-                                     item.CommandValue.Equals(CommandValue.ForceClose.ToString()))
+                            else if (item.CommandValue.Equals(CommandValue.Close) ||
+                                     item.CommandValue.Equals(CommandValue.ForceClose))
                             {
-                                return Accepted(new CommandItem
+                                return Accepted(new AnswerModel()
                                 {
-                                    Id = item.Id,
-                                    Command = item.Command,
-                                    CommandValue = CommandValueAnswer.AlreadyClosed.ToString()
+                                    Answer = CommandValueAnswer.AlreadyClosed.ToString()
                                 });
                             }
 
                             break;
                         case GateStatus.GateClosing:
-                            if (item.CommandValue.Equals(CommandValue.Close.ToString()) ||
-                                item.CommandValue.Equals(CommandValue.ForceClose.ToString()))
+                            if (item.CommandValue.Equals(CommandValue.Close) ||
+                                item.CommandValue.Equals(CommandValue.ForceClose))
                             {
-                                return Accepted(new CommandItem()
+                                return Accepted(new AnswerModel()
                                 {
-                                    Id = item.Id,
-                                    Command = item.Command,
-                                    CommandValue = CommandValueAnswer.GateClosing.ToString()
+                                    Answer = CommandValueAnswer.GateClosing.ToString()
                                 });
                             }
-                            else if (item.CommandValue.Equals(CommandValue.Open.ToString()))
+                            else if (item.CommandValue.Equals(CommandValue.Open))
                             {
-                                return Accepted(new CommandItem
+                                return Accepted(new AnswerModel()
                                 {
-                                    Id = item.Id,
-                                    Command = item.Command,
-                                    CommandValue = CommandValueAnswer.GateClosing.ToString()
+                                    Answer = CommandValueAnswer.GateClosing.ToString()
                                 });
                             }
-                            else if (item.CommandValue.Equals(CommandValue.ForceOpen.ToString()))
+                            else if (item.CommandValue.Equals(CommandValue.ForceOpen))
                             {
                                 _iDataSingleton.GetSystemStatus().IsGateMoving = true;
-                                await _openHab.PostData(_iDataSingleton.GatePathValueChange(), "ON", true);
+                                await _openHab.PostData(_iDataSingleton.GetSettings().GateOpenHabLink, "ON", true);
                                 Thread.Sleep(500);
-                                await _openHab.PostData(_iDataSingleton.GatePathValueChange(), "ON", true);
-                                return Accepted(new CommandItem
+                                await _openHab.PostData(_iDataSingleton.GetSettings().GateOpenHabLink, "ON", true);
+                                return Accepted(new AnswerModel()
                                 {
-                                    Id = item.Id,
-                                    Command = item.Command,
-                                    CommandValue = CommandValueAnswer.GateOpening.ToString()
+                                    Answer = CommandValueAnswer.GateOpening.ToString()
                                 });
                             }
-
                             break;
                         default:
                             return NotFound();
                     }
-
                     break;
+                case Command.OpenGateAuto:
+                    switch (_iDataSingleton.GetSystemStatus().GateStatus)
+                    {
+                        case GateStatus.GateOpen:
+                            return Accepted(new AnswerModel()
+                            {
+                                Answer = CommandValueAnswer.AlreadyOpen.ToString()
+                            });
+                        case GateStatus.GateOpening:
+                            return Accepted(new AnswerModel()
+                            {
+                                Answer = CommandValueAnswer.AlreadyOpening.ToString()
+                            });
+                        case GateStatus.GateClosed:
+                            _iDataSingleton.GetSystemStatus().IsGateMoving = true;
+                            _iDataSingleton.GetSystemStatus().IsAutoMode = true;
+                            await _openHab.PostData(_iDataSingleton.GetSettings().GateOpenHabLink, "ON", true);
+                            StartAutoCloseTimer();
+                            return Accepted(new AnswerModel()
+                            {
+                                Answer = CommandValueAnswer.GateOpening.ToString() + " and gate will close automatically!"
+                            });
+                        case GateStatus.GateClosing:
+                            _iDataSingleton.GetSystemStatus().IsGateMoving = true;
+                            _iDataSingleton.GetSystemStatus().IsAutoMode = true;
+                            await _openHab.PostData(_iDataSingleton.GetSettings().GateOpenHabLink, "ON", true);
+                            Thread.Sleep(500);
+                            await _openHab.PostData(_iDataSingleton.GetSettings().GateOpenHabLink, "ON", true);
+                            StartAutoCloseTimer();
+                            return Accepted(new AnswerModel()
+                            {
+                                Answer = CommandValueAnswer.GateOpening.ToString()
+                            });
+                        default:
+                            return NotFound();
+                    }
             }
 
             return NotFound();
@@ -447,13 +523,12 @@ namespace GeoDoorServer.API
         {
             switch (Enum.Parse<Command>(item.Command.ToString()))
             {
-                case Command.CheckUser:
-                case Command.OpenDoor when item.CommandValue.Equals(CommandValue.Open.ToString()) ||
-                                           item.CommandValue.Equals(CommandValue.Close.ToString()):
-                case Command.OpenGate when item.CommandValue.Equals(CommandValue.Open.ToString()) ||
-                                           item.CommandValue.Equals(CommandValue.Close.ToString()) ||
-                                           item.CommandValue.Equals(CommandValue.ForceOpen.ToString()) ||
-                                           item.CommandValue.Equals(CommandValue.ForceClose.ToString()):
+                case Command.OpenDoor when item.CommandValue.Equals(CommandValue.Open) ||
+                                           item.CommandValue.Equals(CommandValue.Close):
+                case Command.OpenGate when item.CommandValue.Equals(CommandValue.Open) ||
+                                           item.CommandValue.Equals(CommandValue.Close) ||
+                                           item.CommandValue.Equals(CommandValue.ForceOpen) ||
+                                           item.CommandValue.Equals(CommandValue.ForceClose):
                     return true;
                 default:
                     return false;
@@ -465,7 +540,7 @@ namespace GeoDoorServer.API
         /// </summary>
         /// <param name="auth"></param>
         /// <returns></returns>
-        private async Task<bool> CheckUser(AuthModel auth)
+        private async Task<ActionResult<AnswerModel>> CheckUser(AuthModel auth)
         {
             if (_context.Users.Any(u => u.Name.Equals(auth.Name)))
             {
@@ -473,57 +548,35 @@ namespace GeoDoorServer.API
                     
                 if (user?.Name != null && user.PhoneId != null)
                 {
+                    if (!user.AccessRights.Equals(AccessRights.Allowed))
+                    {
+                        return BadRequest(new AnswerModel()
+                        {
+                            Answer = "User not allowed!"
+                        });
+                    }
+                    
                     if (user.Name.Equals(auth.Name) 
-                        && user.PhoneId.Equals(auth.Md5Hash)
-                        && user.AccessRights.Equals(AccessRights.Allowed))
+                        && user.PhoneId.Equals(auth.Md5Hash))
                     {
                         user.LastConnection = DateTime.Now;
                         await _context.SaveChangesAsync();
 
-                        return true;
+                        return null;
                     }
+
+                    return BadRequest(new AnswerModel()
+                    {
+                        Answer = "Credentials are wrong!"
+                    });
                 }
             }
-            return false;
+            return BadRequest(new AnswerModel()
+            {
+                Answer = "Missing Credentials!"
+            });
         }
 
-        /// <summary>
-        /// Creates the user if it doesn't already exists.
-        /// </summary>
-        /// <param name="item"></param>
-        /// <returns></returns>
-        private async Task<bool> CreateUser(CommandItem item)
-        {
-            try
-            {
-                if (_context.Users.Any(u => u.PhoneId.Equals(item.Id)))
-                {
-                    return false;
-                }
-
-                User user = new User()
-                {
-                    PhoneId = item.Id,
-                    Name = item.CommandValue,
-                    AccessRights = AccessRights.NotAllowed,
-                    LastConnection = DateTime.Now
-                };
-                await _context.Users.AddAsync(user);
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch (Exception e)
-            {
-                _iDataSingleton.AddErrorLog(new ErrorLog()
-                {
-                    LogLevel = LogLevel.Error,
-                    MsgDateTime = DateTime.Now,
-                    Message = $"{typeof(ValuesController)}:CreateUser Exception => {e}"
-                });
-                return false;
-            }
-        }
-        
         /// <summary>
         /// Creates a md5Hash from a string.
         /// </summary>
@@ -541,8 +594,14 @@ namespace GeoDoorServer.API
             byte[] result = md5.ComputeHash(textToHash); 
 
             return BitConverter.ToString(result); 
-        } 
+        }
 
+        private void StartAutoCloseTimer()
+        {
+            _autoCloseTimer.Interval = _autoCloseTimout;
+            _autoCloseTimer.Start();
+        }
+        
         #endregion
 
         #region API Examples

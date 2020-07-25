@@ -26,15 +26,14 @@ namespace GeoDoorServer.CustomService
             _openHab = openHab;
             _dataSingleton = dataSingleton;
             _context = context;
-            
-            _dataSingleton.SetGateTimeOut(_context.Settings.First(settings => settings.Id > 0).GateTimeout);
-            _dataSingleton.SetStatusGatePath(_context.Settings.First(settings => settings.Id > 0).StatusOpenHabLink);
-            _dataSingleton.SetGatePath(_context.Settings.First(settings => settings.Id > 0).GateOpenHabLink);
+
+            Settings settings = _context.Settings.First();
+            _dataSingleton.SetSettings(settings);
         }
 
         public async Task<string> GetDoorStatus()
         {
-            return await _openHab.GetData(_dataSingleton.GatePathStatus());
+            return await _openHab.GetData(_dataSingleton.GetSettings().StatusOpenHabLink);
         }
 
         public SystemStatus GetOpenHabStatus()
