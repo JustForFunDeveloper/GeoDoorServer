@@ -40,7 +40,7 @@ namespace GeoDoorServer.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(int id, 
-            [Bind("DoorOpenHabLink,GateOpenHabLink,StatusOpenHabLink,GateTimeout,MaxErrorLogRows")] Settings settings)
+            [Bind("DoorOpenHabLink,GateOpenHabLink,StatusOpenHabLink,GateTimeout,AutoGateTimeout,MaxErrorLogRows")] Settings settings)
         {
             Settings currentSettings = _context.Settings.First();
              if (currentSettings == null)
@@ -56,6 +56,7 @@ namespace GeoDoorServer.Controllers
                     currentSettings.GateOpenHabLink = settings.GateOpenHabLink;
                     currentSettings.StatusOpenHabLink = settings.StatusOpenHabLink;
                     currentSettings.GateTimeout = settings.GateTimeout;
+                    currentSettings.AutoGateTimeout = settings.AutoGateTimeout;
                     currentSettings.MaxErrorLogRows = settings.MaxErrorLogRows;
                     _context.Update(currentSettings);
                     await _context.SaveChangesAsync();

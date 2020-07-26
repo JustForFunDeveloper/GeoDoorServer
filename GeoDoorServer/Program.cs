@@ -71,6 +71,7 @@ namespace GeoDoorServer
                         Settings settings = new Settings()
                         {
                             GateTimeout = 30000,
+                            AutoGateTimeout = 60000,
                             DoorOpenHabLink = "http://192.168.1.114:8080/rest/items/eg_tuer",
                             GateOpenHabLink = "http://192.168.1.114:8080/rest/items/eg_wand",
                             StatusOpenHabLink = "http://192.168.1.114:8080/rest/items/eg_tor_stat/state",

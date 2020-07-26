@@ -14,21 +14,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GeoDoorServer.Controllers
 {
-    // TODO: Link Users to the 
     public class UsersController : Controller
     {
         private readonly UserDbContext _context;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        // private readonly SignInManager<ApplicationUser> _signInManager;
+        // private readonly UserManager<ApplicationUser> _userManager;
+        // private readonly RoleManager<IdentityRole> _roleManager;
 
-        public UsersController(UserDbContext context, SignInManager<ApplicationUser> signInManager,
-            UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        public UsersController(UserDbContext context, RoleManager<IdentityRole> roleManager)
         {
             _context = context;
-            _signInManager = signInManager;
-            _userManager = userManager;
-            _roleManager = roleManager;
+            // _signInManager = signInManager;
+            // _userManager = userManager;
+            // _roleManager = roleManager;
         }
 
         // GET: Users
@@ -80,25 +78,25 @@ namespace GeoDoorServer.Controllers
                                                     $"PhoneId '{user.PhoneId}' does already exist!");
             if (ModelState.IsValid)
             {
-                var newApplicationUser = new ApplicationUser { UserName = user.Name, AccessRights = user.AccessRights, LastConnection = DateTime.Now};
-                var result = await _userManager.CreateAsync(newApplicationUser, "ApiAdm1n!");
-                if (result.Succeeded)
-                {
-                    var role = new IdentityRole
-                    {
-                        Name = "ApiUser"
-                    };
-
-                    if (!await _roleManager.RoleExistsAsync(role.Name))
-                    {
-                        var roleResult = await _roleManager.CreateAsync(role);
-                        if (!roleResult.Succeeded)
-                        {
-                            return RedirectToPage("/Home/Error");
-                        }
-                    }
-                    await _userManager.AddToRoleAsync(newApplicationUser, role.Name);
-                }
+                // var newApplicationUser = new ApplicationUser { UserName = user.Name, AccessRights = user.AccessRights, LastConnection = DateTime.Now};
+                // var result = await _userManager.CreateAsync(newApplicationUser, "ApiAdm1n!");
+                // if (result.Succeeded)
+                // {
+                //     var role = new IdentityRole
+                //     {
+                //         Name = "ApiUser"
+                //     };
+                //
+                //     if (!await _roleManager.RoleExistsAsync(role.Name))
+                //     {
+                //         var roleResult = await _roleManager.CreateAsync(role);
+                //         if (!roleResult.Succeeded)
+                //         {
+                //             return RedirectToPage("/Home/Error");
+                //         }
+                //     }
+                //     await _userManager.AddToRoleAsync(newApplicationUser, role.Name);
+                // }
                 
                 user.LastConnection = DateTime.Now;
                 _context.Add(user);

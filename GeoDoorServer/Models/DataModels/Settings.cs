@@ -8,5 +8,6 @@
         public string GateOpenHabLink { get; set; }
         public string DoorOpenHabLink { get; set; }
         public int GateTimeout { get; set; }
+        public int AutoGateTimeout { get; set; }
     }
 }

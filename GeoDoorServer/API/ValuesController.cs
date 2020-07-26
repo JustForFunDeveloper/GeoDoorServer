@@ -44,7 +44,7 @@ namespace GeoDoorServer.API
             _userManager = userManager;
             _roleManager = roleManager;
 
-            _autoCloseTimout = 5000;
+            _autoCloseTimout = _iDataSingleton.GetSettings().AutoGateTimeout;
 
             _autoCloseTimer = new Timer();
             _autoCloseTimer.Interval = _autoCloseTimout;
@@ -186,6 +186,22 @@ namespace GeoDoorServer.API
             }
         }
 
+        [HttpPost("gateStatus")]
+        public async Task<ActionResult<AnswerModel>> GetGateStatus([FromBody] AuthModel auth)
+        {
+            ActionResult<AnswerModel> result = await CheckUser(auth);
+
+            if (result != null)
+            {
+                return result;
+            }
+
+            return Accepted(new AnswerModel()
+            {
+                Data = _iDataSingleton.GetSystemStatus().GateStatus.ToString()
+            });
+        }
+
         //[HttpPost("register")]
         //public async Task<ActionResult<CommandItem>> PostRegister([FromBody] ApiUser item)
         //{
@@ -281,8 +297,11 @@ namespace GeoDoorServer.API
             switch (item.Command)
             {
                 case Command.OpenDoor:
-                    await _openHab.PostData(_iDataSingleton.GetSettings().DoorOpenHabLink, "ON", true);
-                    break;
+                    // await _openHab.PostData(_iDataSingleton.GetSettings().DoorOpenHabLink, "ON", true);
+                    return Accepted(new AnswerModel()
+                    {
+                        Answer = CommandValueAnswer.GateOpening.ToString()
+                    });
                 case Command.OpenGate:
                     switch (_iDataSingleton.GetSystemStatus().GateStatus)
                     {
@@ -529,6 +548,7 @@ namespace GeoDoorServer.API
                                            item.CommandValue.Equals(CommandValue.Close) ||
                                            item.CommandValue.Equals(CommandValue.ForceOpen) ||
                                            item.CommandValue.Equals(CommandValue.ForceClose):
+                case Command.OpenGateAuto when item.CommandValue.Equals(CommandValue.Open): 
                     return true;
                 default:
                     return false;

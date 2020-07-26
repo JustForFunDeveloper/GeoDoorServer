@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GeoDoorServer.Data
 {
-    // TODO: Remove Users from this DB and let the much more powerfuls Identity model from ASP.NET Core handel it.
     public class UserDbContext : DbContext
     {
         public DbSet<User> Users { get; set; }
