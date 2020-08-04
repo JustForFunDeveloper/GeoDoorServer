@@ -1,7 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
-using GeoDoorServer.CustomService.Models;
 using GeoDoorServer.Data;
 using GeoDoorServer.Models.DataModels;
 
@@ -9,8 +8,8 @@ namespace GeoDoorServer.CustomService
 {
     internal interface IScopedService
     {
+        Task PostData(string itemName, string value, bool toggle = false);
         Task<string> GetDoorStatus();
-        SystemStatus GetOpenHabStatus();
         void WriteErrorLogs();
         void AddQueueMessage(ErrorLog errorLog);
     }
@@ -31,14 +30,14 @@ namespace GeoDoorServer.CustomService
             _dataSingleton.SetSettings(settings);
         }
 
+        public Task PostData(string itemName, string value, bool toggle = false)
+        {
+            return _openHab.PostData(itemName, value, toggle);
+        }
+
         public async Task<string> GetDoorStatus()
         {
             return await _openHab.GetData(_dataSingleton.GetSettings().StatusOpenHabLink);
-        }
-
-        public SystemStatus GetOpenHabStatus()
-        {
-            return _dataSingleton.GetSystemStatus();
         }
 
         public void WriteErrorLogs()

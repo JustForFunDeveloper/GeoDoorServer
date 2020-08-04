@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Timer = System.Timers.Timer;
 
 namespace GeoDoorServer.API
 {
@@ -28,9 +27,6 @@ namespace GeoDoorServer.API
         private readonly IOpenHabMessageService _openHab;
         private readonly IDataSingleton _iDataSingleton;
 
-        private Timer _autoCloseTimer;
-        private int _autoCloseTimout;
-
         #region Public Methods
 
         public ValuesController(UserDbContext context, IOpenHabMessageService openHab, IDataSingleton iDataSingleton,
@@ -43,18 +39,6 @@ namespace GeoDoorServer.API
             _signInManager = signInManager;
             _userManager = userManager;
             _roleManager = roleManager;
-
-            _autoCloseTimout = _iDataSingleton.GetSettings().AutoGateTimeout;
-
-            _autoCloseTimer = new Timer();
-            _autoCloseTimer.Interval = _autoCloseTimout;
-            _autoCloseTimer.Elapsed += async (sender, args) =>
-            {
-                _autoCloseTimer.Stop();
-                _iDataSingleton.GetSystemStatus().IsGateMoving = true;
-                await _openHab.PostData(_iDataSingleton.GetSettings().GateOpenHabLink, "ON", true);
-                _iDataSingleton.GetSystemStatus().IsAutoMode = false;
-            };
         }
 
         [HttpPost("register")]
@@ -318,7 +302,8 @@ namespace GeoDoorServer.API
 
                                 if (item.CommandValue.Equals(CommandValue.ForceOpen))
                                 {
-                                    _autoCloseTimer.Stop();
+                                    _iDataSingleton.SetAutoGate(false);
+                                    // _autoCloseTimer.Stop();
                                     _iDataSingleton.GetSystemStatus().IsAutoMode = false;
                                     return Accepted(new AnswerModel()
                                     {
@@ -336,7 +321,8 @@ namespace GeoDoorServer.API
                                 
                                 if (item.CommandValue.Equals(CommandValue.ForceClose))
                                 {
-                                    _autoCloseTimer.Stop();
+                                    _iDataSingleton.SetAutoGate(false);
+                                    // _autoCloseTimer.Stop();
                                     _iDataSingleton.GetSystemStatus().IsAutoMode = false;
                                     _iDataSingleton.GetSystemStatus().IsGateMoving = true;
                                     await _openHab.PostData(_iDataSingleton.GetSettings().GateOpenHabLink, "ON", true);
@@ -380,7 +366,8 @@ namespace GeoDoorServer.API
 
                                 if (item.CommandValue.Equals(CommandValue.ForceOpen))
                                 {
-                                    _autoCloseTimer.Stop();
+                                    _iDataSingleton.SetAutoGate(false);
+                                    // _autoCloseTimer.Stop();
                                     _iDataSingleton.GetSystemStatus().IsAutoMode = false;
                                     return Accepted(new AnswerModel()
                                     {
@@ -398,7 +385,8 @@ namespace GeoDoorServer.API
                                 
                                 if (item.CommandValue.Equals(CommandValue.ForceClose))
                                 {
-                                    _autoCloseTimer.Stop();
+                                    _iDataSingleton.SetAutoGate(false);
+                                    // _autoCloseTimer.Stop();
                                     _iDataSingleton.GetSystemStatus().IsAutoMode = false;
                                     _iDataSingleton.GetSystemStatus().IsGateMoving = true;
                                     await _openHab.PostData(_iDataSingleton.GetSettings().GateOpenHabLink, "ON", true);
@@ -616,10 +604,9 @@ namespace GeoDoorServer.API
             return BitConverter.ToString(result); 
         }
 
-        private void StartAutoCloseTimer()
+        private async void StartAutoCloseTimer()
         {
-            _autoCloseTimer.Interval = _autoCloseTimout;
-            _autoCloseTimer.Start();
+            _iDataSingleton.SetAutoGate(true);
         }
         
         #endregion

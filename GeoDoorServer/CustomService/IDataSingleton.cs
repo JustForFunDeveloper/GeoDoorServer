@@ -6,6 +6,8 @@ namespace GeoDoorServer.CustomService
 {
     public interface IDataSingleton
     {
+        public bool? IsAutoGateEnabled();
+        public void SetAutoGate(bool isEnabled);
         public void SetSettings(Settings settings);
         public Settings GetSettings();
         SystemStatus GetSystemStatus();

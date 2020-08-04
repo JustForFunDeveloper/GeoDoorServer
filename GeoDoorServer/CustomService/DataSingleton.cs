@@ -9,11 +9,22 @@ namespace GeoDoorServer.CustomService
         private SystemStatus _systemStatus;
         private ConcurrentQueue<ErrorLog> _concurrentQueue;
         private Settings _settings;
+        private bool? _isAutoGateEnabled;
 
         public DataSingleton()
         {
             _systemStatus = new SystemStatus();
             _concurrentQueue = new ConcurrentQueue<ErrorLog>();
+        }
+        
+        public bool? IsAutoGateEnabled()
+        {
+            return _isAutoGateEnabled;
+        }
+
+        public void SetAutoGate(bool isEnabled)
+        {
+            _isAutoGateEnabled = isEnabled;
         }
 
         public void SetSettings(Settings settings)

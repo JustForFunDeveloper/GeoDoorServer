@@ -61,9 +61,9 @@ namespace GeoDoorServer.CustomService
                     scope.ServiceProvider
                         .GetRequiredService<IDataSingleton>();
 
-                if (result.Equals("ON"))
+                if (result.Equals("OPEN"))
                     scopedDataSingleton.GetSystemStatus().GateStatus = GateStatus.GateOpen;
-                else if (result.Equals("OFF"))
+                else if (result.Equals("CLOSED"))
                     scopedDataSingleton.GetSystemStatus().GateStatus = GateStatus.GateClosed;
 
                 scopedDataSingleton.GetSystemStatus().OnlineTimeSpan =

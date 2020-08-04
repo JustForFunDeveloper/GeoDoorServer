@@ -18,7 +18,7 @@
     "GeoDoorServer": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "https://10.216.1.59:5001;http://10.216.1.59:5000",
+      "applicationUrl": "https://192.168.1.151:5001;http://192.168.1.151:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

@@ -44,6 +44,7 @@ namespace GeoDoorServer
 
             services.AddHostedService<TimedOpenHabService>();
             services.AddHostedService<TimedLoggingService>();
+            services.AddSingleton<IHostedService, AutoGateTimeoutService>();
             services.AddScoped<IScopedService, ScopedService>();
             services.AddSingleton<IDataSingleton, DataSingleton>();
         }
