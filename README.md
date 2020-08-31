@@ -1,6 +1,6 @@
 # GeoDoor Server
 This is the server for a project which allows the user to automatically open the gate at the house when the user drives home.
-The App on the phone is sending a signal to open the door at home.
+The [<b>GeoDoor App</b>](https://github.com/JustForFunDeveloper/GeoDoor_App) on the phone is sending a signal to open the door at home.
 
 ## Libraries
 [![](https://img.shields.io/github/release/JustForFunDeveloper/GeoDoorServer.svg)](https://github.com/JustForFunDeveloper/GeoDoorServer) <br/>
